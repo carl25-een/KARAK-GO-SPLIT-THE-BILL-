@@ -3,68 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Karak Go — Matcha Café · Split the Bill</title>
+  <title>Karak Go — Matcha Café</title>
+  <meta http-equiv="refresh" content="4;url=/app" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/intro.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍵</text></svg>" />
 </head>
-<body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="brand-icon">🍵</span>
-      <div>
-        <div class="brand-name">Karak Go</div>
-        <div class="brand-sub">Matcha Café</div>
-      </div>
+<body class="splash">
+  <main class="splash-wrap" id="splash" role="link" aria-label="Enter Karak Go — Split the Bill" tabindex="0">
+    <div class="splash-pop">
+      <div class="splash-icon">🍵</div>
+      <div class="splash-name">Karak &amp; Go</div>
+      <div class="splash-sub">Matcha Café</div>
     </div>
-    <nav>
-      <a class="navbtn" href="/app" style="text-decoration:none">Open the app</a>
-    </nav>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="cup">🍵</div>
-      <h1>Welcome to Karak Go</h1>
-      <p class="lead">Karak Go is a matcha café — matcha drinks, desserts and café food, priced in KSh. This is our split-the-bill system: add your table's order and it works out exactly what each person owes, so friends and tablemates can split a café bill fairly, down to the last shilling.</p>
-    </section>
-
-    <div class="cta-wrap">
-      <a class="btn big" href="/app">Enter — split a bill</a>
-    </div>
-
-    <h2 class="center">How it works</h2>
-    <div class="steps">
-      <div class="card step">
-        <span class="num">1</span>
-        <h3>Start a bill</h3>
-        <p class="muted">Start a bill for your table and add everyone's names.</p>
-      </div>
-      <div class="card step">
-        <span class="num">2</span>
-        <h3>Add what you ordered</h3>
-        <p class="muted">Add what you ordered from the café menu — every matcha, dessert and bite.</p>
-      </div>
-      <div class="card step">
-        <span class="num">3</span>
-        <h3>Split &amp; settle up</h3>
-        <p class="muted">Split it — equally, by item, or by custom percentages — and settle up who owes whom.</p>
-      </div>
-    </div>
-
-    <div class="card">
-      <h3 style="margin-top:0">What's inside</h3>
-      <ul class="features">
-        <li>The full café menu, priced in KSh</li>
-        <li>Tip, tax and discount all handled for you</li>
-        <li>Mark who's paid, so nobody loses track</li>
-        <li>A shareable link for every bill — send it to your table</li>
-      </ul>
-    </div>
-
-    <p class="note muted">Got a bill link from your table? It opens your bill directly — no need to start here.</p>
+    <div class="splash-divider" aria-hidden="true"></div>
+    <div class="splash-app">Split the Bill</div>
+    <div class="splash-hint">Tap to enter</div>
   </main>
-
-  <footer class="foot">Prices in KSh · Karak Go Matcha Café</footer>
+  <footer class="splash-foot">Prices in KSh · Karak Go Matcha Café</footer>
+  <script>
+    (function () {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var done = false;
+      function go() {
+        if (done) return;
+        done = true;
+        window.location.replace('/app');
+      }
+      window.setTimeout(go, reduce ? 700 : 2400);
+      document.addEventListener('click', go);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') go();
+      });
+    })();
+  </script>
 </body>
 </html>
