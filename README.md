@@ -60,7 +60,7 @@ The app is a single long-running Node process with a writable `data/` folder. An
 2. In Render: **New → Web Service**, connect the repo.
 3. Build command: leave empty (or `npm install` — a no-op here). Start command: `node server.js`.
 4. (Optional) In **Environment**, add `STAFF_PIN`.
-5. ⚠️ **Free-tier caveat**: Render's free disk is *ephemeral* — `data/store.json` resets when the service restarts/redeploys. For durable data, attach a Render **Persistent Disk** mounted at `data/`, or treat the free deploy as a demo and see the scaling notes in `PLAN.md`.
+5. ⚠️ **Free-tier caveat**: Render's free disk is *ephemeral* — `data/store.json` resets when the service restarts/redeploys, and free services also spin down after ~15 idle minutes. Free web services **cannot** attach a Render **Persistent Disk** — that is a paid-instance feature only — so on the free tier there is no way to make the data survive. Treat a free Render deploy as a demo only; for a real pilot use Railway (below) or a paid Render instance, and see the scaling notes in `PLAN.md`.
 
 ### Railway
 

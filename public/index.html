@@ -3,28 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#1e3a24" />
   <title>Matcha Café — Split the Bill</title>
   <link rel="stylesheet" href="/styles.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🍵</text></svg>" />
 </head>
 <body>
   <header class="topbar">
-    <div class="brand" onclick="goHome()" style="cursor:pointer">
-      <span class="brand-icon">🍵</span>
-      <div>
+    <div class="brand" onclick="goHome()" role="button" tabindex="0" aria-label="Matcha Café — back to all bills" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();goHome();}">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="30" height="30" focusable="false">
+          <path d="M17 6c-2 3 2 4 0 7M25 5c-2 3 2 4 0 7M33 6c-2 3 2 4 0 7" fill="none" stroke="#cfe3bd" stroke-width="2.4" stroke-linecap="round"/>
+          <path d="M7 20h34c0 9.4-7.2 16-17 16S7 29.4 7 20Z" fill="#faf6ea"/>
+          <path d="M7 20h34c-.6 3.4-2.2 6.4-4.6 8.6C33.4 24.9 28.9 23 24 23s-9.4 1.9-12.4 5.6C9.2 26.4 7.6 23.4 7 20Z" fill="#7fae6d"/>
+          <path d="M14 40h20" stroke="#cfe3bd" stroke-width="2.6" stroke-linecap="round"/>
+        </svg>
+      </span>
+      <div class="brand-text">
         <div class="brand-name">Matcha Café</div>
         <div class="brand-sub">Split the Bill</div>
       </div>
     </div>
-    <nav id="mainNav">
+    <nav id="mainNav" aria-label="Main">
       <button class="navbtn" onclick="goHome()">Bills</button>
       <button class="navbtn" onclick="showMenu()">Café menu</button>
     </nav>
   </header>
 
-  <main id="app"><p class="muted" style="text-align:center;padding:2rem">Loading…</p></main>
+  <main id="app"><p class="muted loading">Loading…</p></main>
 
-  <footer class="foot">Matcha Café Split-the-Bill · Prices in KSh</footer>
+  <div id="stickybar" class="stickybar" hidden></div>
+  <div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div id="modal-root"></div>
+
+  <footer class="foot">Matcha Café · Split the Bill · Prices in KSh</footer>
 
   <script src="/app.js"></script>
 </body>
