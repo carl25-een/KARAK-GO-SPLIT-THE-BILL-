@@ -1,4 +1,4 @@
-// public/app.js — Matcha Café Split-the-Bill single-page app (vanilla JS, no build step).
+// public/app.js — Karak & Go Split-the-Bill single-page app (vanilla JS, no build step).
 
 let staffPin = sessionStorage.getItem('staffPin') || '';
 let config = { staffPinRequired: false };
@@ -394,7 +394,7 @@ async function showMenu() {
       </div>
       <label>Category</label>
       <select id="nmCat">
-        <option>Drinks</option><option>Desserts</option><option>Food</option><option>Extras</option>
+        <option>Hot Drinks</option><option>Iced Teas &amp; Coffees</option><option>Matcha</option><option>Mojitos</option><option>Milkshakes</option><option>Signature Sandos</option><option>Sweets &amp; More</option><option>Extras</option>
       </select>
       <p><button class="btn" onclick="addMenuItem()">Add to menu</button>
       <button class="btn secondary" onclick="goHome()">Back to bills</button></p>

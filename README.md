@@ -1,13 +1,13 @@
-# 🍵 Matcha Café — Split the Bill
+# 🍵 Karak & Go — Split the Bill
 
-A small, self-contained **split-the-bill system for a matcha café**. Staff create a bill for a table, add what was ordered from the café menu, and the system works out exactly what each person owes — then shows who owes whom when one person pays the café.
+A small, self-contained **split-the-bill system for Karak & Go**, the grab-and-go café in Nairobi. Staff create a bill for a table, add what was ordered from the café menu, and the system works out exactly what each person owes — then shows who owes whom when one person pays the café.
 
 It is the standalone, publicly hostable version of the system: all data lives **server-side**, so the café and customers who open the same hosted URL share the same bills in real time.
 
 ## Features
 
 - **Bills** — create a bill with an occasion, table number and everyone's names; close bills into a settled history; reopen or delete them later.
-- **Café menu** — 14 matcha drinks, desserts, food and extras priced in KSh, seeded on first run and fully editable by the café (add / edit / delete). Bills keep the price an item was added at, so menu edits never change a bill in progress.
+- **Café menu** — the café's real menu, mirroring [karakandgo.com](https://karakandgo.com/menu) (Nov 2026): 57 items across the site's 8 categories (Hot Drinks, Iced Teas & Coffees, Matcha, Mojitos, Milkshakes, Signature Sandos, Sweets & More, Extras), priced in KSh. Fresh installs are seeded with it; existing stores are migrated to it exactly once via `menuVersion` in `lib/store.js` (only the menu is replaced — bills are preserved, and café edits made after the migration are kept). The menu stays fully editable by the café (add / edit / delete). Bills keep the price an item was added at, so menu edits never change a bill in progress.
 - **Custom items** — add one-off items (name + price) to any bill.
 - **Three ways to split**
   - *Equally* between everyone,
@@ -17,7 +17,7 @@ It is the standalone, publicly hostable version of the system: all data lives **
 - **Mark paid** per person, plus a **Settle up** view: pick who paid the café and see who owes them (and who has settled).
 - **Shareable bill links** — every bill has its own URL (`/bill/<id>`) the café can send to the table; customers opening it see the same live bill and their own card.
 - **Optional staff PIN** — set `STAFF_PIN` to protect menu editing and bill deletion.
-- **Mobile-friendly**, matcha-green café styling, no build step.
+- **Mobile-friendly**, warm cream-and-caramel styling in the café's own website theme, no build step.
 
 ## Tech
 
@@ -43,7 +43,7 @@ Open <http://localhost:3000>. That's it — no `npm install` needed.
 
 Pages: `/` is the introduction page; the app itself lives at `/app`. Bill links (`/bill/<id>`) are unchanged and open the bill directly.
 
-Try it: start a bill → add a few matcha lattes → switch the split to **By item** and tap names → set who paid the café → watch **Settle up**.
+Try it: start a bill → add a few karaks and matcha lattes → switch the split to **By item** and tap names → set who paid the café → watch **Settle up**.
 
 ## Environment variables
 
@@ -91,7 +91,9 @@ matcha-cafe-split-bill/
 │   └── calc.js        # split maths (exact-cent rounding, settle up)
 ├── public/
 │   ├── index.html     # app shell
-│   ├── styles.css     # matcha-green styling
+│   ├── styles.css     # Karak & Go cream-and-caramel styling
+│   ├── intro.html     # splash screen (brand pop + floating drinks → /app)
+│   ├── intro.css      # splash styling
 │   └── app.js         # single-page frontend (no build step)
 ├── data/              # store.json lives here (git-ignored, created at runtime)
 ├── .env.example       # PORT, STAFF_PIN

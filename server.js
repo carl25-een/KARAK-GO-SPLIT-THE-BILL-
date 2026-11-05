@@ -1,4 +1,4 @@
-// server.js — Matcha Café Split-the-Bill server.
+// server.js — Karak & Go Split-the-Bill server.
 // Zero-dependency Node.js (built-in http module only). Run: node server.js
 
 const http = require('http');
@@ -220,6 +220,6 @@ const server = http.createServer(async (req, res) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Matcha Café Split-the-Bill running at http://localhost:${PORT}`);
+  console.log(`Karak & Go Split-the-Bill running at http://localhost:${PORT}`);
   console.log(STAFF_PIN ? 'Staff PIN protection: ON' : 'Staff PIN protection: OFF (set STAFF_PIN to enable)');
 });

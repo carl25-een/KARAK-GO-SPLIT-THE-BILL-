@@ -1,14 +1,18 @@
+/* Karak & Go theme — warm cream + karak caramel-brown, mirroring karakandgo.com.
+   Variable names kept from the original theme so the rest of the CSS follows. */
 :root {
-  --green: #3e7c4f;
-  --green-dark: #2c5f3a;
-  --green-soft: #e7f2e2;
-  --cream: #faf7ef;
+  --green: #bc9575;
+  --green-dark: #725937;
+  --caramel-dark: #a67b54;
+  --green-soft: #f0ebe4;
+  --cream: #f7f3ea;
   --card: #ffffff;
-  --ink: #22331f;
-  --muted: #71806c;
-  --line: #dde5d5;
+  --ink: #211d18;
+  --muted: #8a7a63;
+  --line: #e7dfd2;
   --danger: #b3402e;
   --radius: 14px;
+  --font-display: Georgia, "Palatino Linotype", Palatino, "Times New Roman", serif;
 }
 * { box-sizing: border-box; }
 body {
@@ -19,25 +23,27 @@ body {
 }
 .topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 0.7rem 1rem; background: var(--green-dark); color: #fff;
+  padding: 0.7rem 1rem; background: var(--cream); color: var(--ink);
+  border-bottom: 1px solid var(--line);
   position: sticky; top: 0; z-index: 10;
 }
 .brand { display: flex; align-items: center; gap: 0.6rem; }
 .brand-icon { font-size: 1.8rem; background: var(--green-soft); border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; }
-.brand-name { font-weight: 700; font-size: 1.1rem; line-height: 1.1; }
+.brand-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; line-height: 1.1; }
 .brand-sub { font-size: 0.78rem; opacity: 0.85; letter-spacing: 0.04em; text-transform: uppercase; }
 .navbtn {
-  background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.5);
+  background: transparent; color: var(--ink); border: 1px solid var(--muted);
   border-radius: 999px; padding: 0.4rem 0.9rem; margin-left: 0.4rem; cursor: pointer; font-size: 0.9rem;
 }
-.navbtn:hover { background: rgba(255,255,255,0.15); }
+.navbtn:hover { background: var(--green-soft); border-color: var(--caramel-dark); }
 main { max-width: 860px; margin: 0 auto; padding: 1rem; }
 .foot { text-align: center; color: var(--muted); font-size: 0.8rem; padding: 1.5rem 0 2rem; }
+h2, h3 { font-family: var(--font-display); font-style: italic; }
 h2 { margin: 0.4rem 0 0.8rem; }
 h3 { margin: 1.2rem 0 0.5rem; }
 .card {
   background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-  padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(34,51,31,0.05);
+  padding: 1rem; margin-bottom: 1rem; box-shadow: 0 1px 3px rgba(33,29,24,0.05);
 }
 .muted { color: var(--muted); }
 .small { font-size: 0.85rem; }
@@ -51,7 +57,7 @@ input:focus, select:focus { outline: 2px solid var(--green); border-color: var(-
   background: var(--green); color: #fff; border: none; border-radius: 999px;
   padding: 0.6rem 1.2rem; font-size: 0.95rem; font-weight: 600; cursor: pointer;
 }
-.btn:hover { background: var(--green-dark); }
+.btn:hover { background: var(--caramel-dark); }
 .btn.secondary { background: var(--green-soft); color: var(--green-dark); }
 .btn.danger { background: transparent; color: var(--danger); border: 1px solid var(--danger); }
 .btn.small { padding: 0.35rem 0.8rem; font-size: 0.85rem; }
@@ -65,7 +71,7 @@ input:focus, select:focus { outline: 2px solid var(--green); border-color: var(-
   padding: 0.75rem 0; border-bottom: 1px solid var(--line); cursor: pointer;
 }
 .billrow:last-child { border-bottom: none; }
-.billrow .total { font-weight: 700; color: var(--green-dark); }
+.billrow .total { font-family: var(--font-display); font-weight: 700; color: var(--green-dark); }
 .badge {
   font-size: 0.72rem; font-weight: 700; padding: 0.15rem 0.55rem; border-radius: 999px;
   background: var(--green-soft); color: var(--green-dark); text-transform: uppercase; letter-spacing: 0.04em;
@@ -76,7 +82,7 @@ input:focus, select:focus { outline: 2px solid var(--green); border-color: var(-
   background: #fff; color: var(--ink); border-radius: 999px; padding: 0.32rem 0.7rem;
   font-size: 0.88rem; cursor: pointer; margin: 0 0.35rem 0.35rem 0; user-select: none;
 }
-.chip.on { background: var(--green); border-color: var(--green); color: #fff; font-weight: 600; }
+.chip.on { background: var(--green); border-color: var(--caramel-dark); color: #fff; font-weight: 600; }
 .chip .x { font-weight: 700; opacity: 0.7; }
 .menuitem {
   display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
@@ -90,10 +96,10 @@ input:focus, select:focus { outline: 2px solid var(--green); border-color: var(-
 table { width: 100%; border-collapse: collapse; }
 td, th { padding: 0.45rem 0.3rem; text-align: left; font-size: 0.95rem; }
 .totals td { border-top: 1px solid var(--line); }
-.grand { font-size: 1.15rem; font-weight: 800; color: var(--green-dark); }
+.grand { font-family: var(--font-display); font-size: 1.15rem; font-weight: 800; color: var(--green-dark); }
 .personcard { border-left: 5px solid var(--green); }
-.personcard.paid { border-left-color: #b9bfae; opacity: 0.75; }
-.personcard .amt { font-size: 1.25rem; font-weight: 800; color: var(--green-dark); }
+.personcard.paid { border-left-color: #cfc4ae; opacity: 0.75; }
+.personcard .amt { font-family: var(--font-display); font-size: 1.25rem; font-weight: 800; color: var(--green-dark); }
 .settle-line { display: flex; justify-content: space-between; padding: 0.4rem 0; border-bottom: 1px dashed var(--line); }
 .settle-line:last-child { border-bottom: none; }
 .sharebox { display: flex; gap: 0.5rem; }
