@@ -198,9 +198,10 @@ const server = http.createServer(async (req, res) => {
     }
     if (p.startsWith('/api/')) return send(res, 404, { error: 'Not found' });
 
-    // ----- static + SPA routes (/ and /bill/<id>) -----
-    let filePath = path.join(PUBLIC_DIR, p === '/' ? 'index.html' : p);
-    if (p.startsWith('/bill/')) filePath = path.join(PUBLIC_DIR, 'index.html');
+    // ----- static + page routes (/ = intro page; /app and /bill/<id> = the app) -----
+    let filePath = path.join(PUBLIC_DIR, p);
+    if (p === '/') filePath = path.join(PUBLIC_DIR, 'intro.html');
+    else if (p === '/app' || p.startsWith('/bill/')) filePath = path.join(PUBLIC_DIR, 'index.html');
     if (!filePath.startsWith(PUBLIC_DIR)) return send(res, 403, 'Forbidden', 'text/plain');
     fs.readFile(filePath, (err, data) => {
       if (err) {

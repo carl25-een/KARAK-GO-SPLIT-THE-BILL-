@@ -41,6 +41,8 @@ npm start
 
 Open <http://localhost:3000>. That's it — no `npm install` needed.
 
+Pages: `/` is the introduction page; the app itself lives at `/app`. Bill links (`/bill/<id>`) are unchanged and open the bill directly.
+
 Try it: start a bill → add a few matcha lattes → switch the split to **By item** and tap names → set who paid the café → watch **Settle up**.
 
 ## Environment variables

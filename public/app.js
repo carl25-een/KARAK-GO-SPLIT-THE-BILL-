@@ -50,7 +50,7 @@ async function boot() {
 async function goHome() {
   customerView = false;
   document.getElementById('mainNav').style.display = '';
-  history.pushState({}, '', '/');
+  history.pushState({}, '', '/app');
   current = null;
   billList = (await api('/api/bills')).bills;
   renderHome();
@@ -372,7 +372,7 @@ async function reopenCurrent() {
 // ---------------- café menu (staff) ----------------
 async function showMenu() {
   customerView = false;
-  history.pushState({}, '', '/');
+  history.pushState({}, '', '/app');
   menuItems = (await api('/api/menu')).items;
   const cats = [...new Set(menuItems.map((m) => m.category))];
   app.innerHTML = `

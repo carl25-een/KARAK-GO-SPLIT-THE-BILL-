@@ -1,0 +1,28 @@
+/* intro.css — landing-page layout only.
+   Palette, fonts, cards and buttons all come from /styles.css (the original design). */
+.hero { text-align: center; padding: 2rem 0 0.5rem; }
+.hero .cup { font-size: 3rem; line-height: 1; }
+.hero h1 { font-size: 2rem; margin: 0.6rem 0; color: var(--green-dark); }
+.hero .lead { font-size: 1.05rem; color: var(--muted); max-width: 36rem; margin: 0 auto; }
+.center { text-align: center; }
+.cta-wrap { text-align: center; margin: 1.6rem 0 1.8rem; }
+.btn.big {
+  display: inline-block; text-decoration: none;
+  font-size: 1.1rem; padding: 0.85rem 2.1rem;
+}
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.8rem; margin-bottom: 1rem; }
+@media (max-width: 640px) { .steps { grid-template-columns: 1fr; } }
+.step .num {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--green); color: #fff; font-weight: 700;
+}
+.step h3 { margin: 0.5rem 0 0.3rem; }
+.step p { margin: 0; }
+.features { list-style: none; margin: 0.4rem 0 0.2rem; padding: 0; }
+.features li { position: relative; padding: 0.35rem 0 0.35rem 1.6rem; }
+.features li::before {
+  content: "✓"; position: absolute; left: 0.25rem;
+  color: var(--green); font-weight: 700;
+}
+.note { text-align: center; margin: 0.5rem 0 1rem; }
