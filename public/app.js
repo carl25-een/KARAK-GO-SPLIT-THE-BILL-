@@ -183,7 +183,17 @@ function renderBill() {
       <button class="btn small secondary" onclick="addFromMenu('${m.id}')">+ ${esc(m.name)} · ${fmt(m.price)}</button>`).join('')}
     </div>`).join('');
 
-  const perPersonHtml = c.perPerson.map((pp) => `
+  const perPersonHtml = c.perPerson.map((pp) => {
+    const pay = (b.payments || {})[pp.personId];
+    const mpesaHtml = (pp.paid && pay && pay.status === 'success')
+      ? `<p class="small" style="margin:.6rem 0 0">✅ Paid via M-Pesa${pay.receipt ? ` · receipt ${esc(pay.receipt)}` : ''}</p>`
+      : (!pp.paid && config.mpesaEnabled && b.status === 'open' && Math.round(pp.total) >= 1)
+        ? (pay && pay.status === 'pending'
+          ? `<p class="small" style="margin:.6rem 0 0">📲 M-Pesa prompt sent to ${esc(pay.phone || 'the phone')} — enter the PIN on the phone to finish paying ${fmt(pay.amount)}. This card updates by itself once Safaricom confirms.</p>`
+          : `${pay && (pay.status === 'failed' || pay.status === 'cancelled') ? `<p class="small" style="margin:.6rem 0 0;color:#8a6d1a">The last M-Pesa attempt ${pay.status === 'cancelled' ? 'was cancelled' : 'did not go through'} — you can try again.</p>` : ''}
+             <p style="margin:.6rem 0 0"><button class="btn small" onclick="payWithMpesa('${pp.personId}')">Pay ${fmt(Math.round(pp.total))} with M-Pesa</button></p>`)
+        : '';
+    return `
     <div class="card personcard ${pp.paid ? 'paid' : ''}">
       <div class="row" style="justify-content:space-between">
         <strong>${esc(pp.name)}</strong>
@@ -192,7 +202,9 @@ function renderBill() {
       <div class="small muted">Items ${fmt(pp.items)}${pp.tax ? ` · Tax ${fmt(pp.tax)}` : ''}${pp.tip ? ` · Tip ${fmt(pp.tip)}` : ''}</div>
       ${pp.lines && pp.lines.length ? `<ul class="lines">${pp.lines.map((l) => `<li>${esc(l.name)} ×${l.qty}${l.sharedWith > 1 ? ` (shared ${l.sharedWith} ways)` : ''} — ${fmt(l.amount)}</li>`).join('')}</ul>` : ''}
       <label style="margin-top:.6rem"><input type="checkbox" style="width:auto" ${pp.paid ? 'checked' : ''} onchange="togglePaid('${pp.personId}')" /> Paid</label>
-    </div>`).join('');
+      ${mpesaHtml}
+    </div>`;
+  }).join('');
 
   const pctSum = b.people.reduce((s, p) => s + ((b.percentages || {})[p.id] || 0), 0);
 
@@ -298,6 +310,7 @@ function renderBill() {
         <button class="btn danger" onclick="deleteBill('${b.id}')">Delete bill</button>
       </div>
     </div>`;
+  ensurePayPoll();
 }
 
 function copyShare() {
@@ -359,6 +372,41 @@ async function setPercent(personId, value) {
 async function togglePaid(personId) {
   const paidBy = { ...(current.bill.paidBy || {}), [personId]: !(current.bill.paidBy || {})[personId] };
   await saveBill({ paidBy });
+}
+
+// ---- M-Pesa (STK Push) ----
+async function payWithMpesa(personId) {
+  const pp = current.computed.perPerson.find((x) => x.personId === personId);
+  const existing = (current.bill.payments || {})[personId];
+  const phone = prompt(`M-Pesa number for ${pp ? pp.name : 'this person'} — the payment prompt will be sent to this phone:`, existing && existing.phone ? existing.phone : '');
+  if (!phone) return;
+  try {
+    const r = await api(`/api/bills/${current.bill.id}/pay/${personId}`, { method: 'POST', body: { phone } });
+    alert(`M-Pesa prompt sent — enter the PIN on the phone to pay ${fmt(r.amount)}. This card updates by itself once Safaricom confirms.`);
+    current = await api(`/api/bills/${current.bill.id}`);
+    renderBill();
+  } catch (e) { alert(e.message); }
+}
+
+let payPollTimer = null;
+function ensurePayPoll() {
+  if (payPollTimer || !current || !current.bill) return;
+  const hasPending = Object.values(current.bill.payments || {}).some((x) => x && x.status === 'pending');
+  if (!hasPending) return;
+  let ticks = 0;
+  payPollTimer = setInterval(async () => {
+    ticks += 1;
+    if (!current || !current.bill) { clearInterval(payPollTimer); payPollTimer = null; return; }
+    try {
+      const fresh = await api(`/api/bills/${current.bill.id}`);
+      current = fresh;
+      renderBill();
+      const stillPending = Object.values(fresh.bill.payments || {}).some((x) => x && x.status === 'pending');
+      if (!stillPending || ticks >= 40) { clearInterval(payPollTimer); payPollTimer = null; }
+    } catch (e) {
+      if (ticks >= 40) { clearInterval(payPollTimer); payPollTimer = null; }
+    }
+  }, 4000);
 }
 async function closeBill() {
   current = await api(`/api/bills/${current.bill.id}/close`, { method: 'POST' });

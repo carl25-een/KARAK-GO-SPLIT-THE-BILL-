@@ -6,6 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const { load, save, uid } = require('./lib/store');
 const { computeBill } = require('./lib/calc');
+const mpesa = require('./lib/mpesa');
 
 // ---- tiny .env loader (no dependency) ----
 try {
@@ -116,7 +117,7 @@ const server = http.createServer(async (req, res) => {
   try {
     // ----- API -----
     if (p === '/api/config' && method === 'GET') {
-      return send(res, 200, { staffPinRequired: Boolean(STAFF_PIN) });
+      return send(res, 200, { staffPinRequired: Boolean(STAFF_PIN), mpesaEnabled: mpesa.mpesaEnabled() });
     }
 
     if (p === '/api/menu' && method === 'GET') {
@@ -196,6 +197,73 @@ const server = http.createServer(async (req, res) => {
       save();
       return send(res, 200, { bill, computed: computeBill(bill) });
     }
+    // ----- M-Pesa (Daraja STK Push) -----
+    const payMatch = p.match(/^\/api\/bills\/([\w-]+)\/pay\/([\w-]+)$/);
+    if (payMatch && method === 'POST') {
+      if (!mpesa.mpesaEnabled()) return send(res, 503, { error: 'M-Pesa is not set up on this server yet' });
+      const bill = store.bills.find((b) => b.id === payMatch[1]);
+      if (!bill) return send(res, 404, { error: 'Bill not found' });
+      if (bill.status !== 'open') return send(res, 400, { error: 'This bill is already settled' });
+      const person = (bill.people || []).find((x) => x.id === payMatch[2]);
+      if (!person) return send(res, 404, { error: 'Person not found' });
+      if (bill.paidBy && bill.paidBy[person.id]) return send(res, 400, { error: 'Already marked as paid' });
+      const body = await readBody(req);
+      const phone = mpesa.normalizePhone(str(body.phone));
+      if (!phone) return send(res, 400, { error: 'Enter a valid M-Pesa phone number (e.g. 0712 345 678)' });
+      const share = computeBill(bill).perPerson.find((x) => x.personId === person.id);
+      // Daraja charges whole shillings only; round the exact share.
+      const amount = share ? Math.round(share.total) : 0;
+      if (!amount || amount < 1) return send(res, 400, { error: 'Nothing to pay for this person' });
+      bill.payments = bill.payments || {};
+      const existing = bill.payments[person.id];
+      if (existing && existing.status === 'pending' && Date.now() - new Date(existing.requestedAt).getTime() < 120000) {
+        return send(res, 409, { error: 'A payment prompt is already on its way to that phone — enter the PIN, or wait a moment and retry' });
+      }
+      try {
+        const r = await mpesa.stkPush({
+          phone,
+          amount,
+          accountReference: 'KarakGo',
+          description: `Bill share - ${person.name}`,
+        });
+        bill.payments[person.id] = {
+          checkoutRequestId: r.checkoutRequestId, merchantRequestId: r.merchantRequestId,
+          phone, amount, status: 'pending',
+          requestedAt: new Date().toISOString(), completedAt: null, receipt: null, resultDesc: null,
+        };
+        save();
+        return send(res, 200, { ok: true, amount, checkoutRequestId: r.checkoutRequestId });
+      } catch (e) {
+        return send(res, 502, { error: 'M-Pesa could not be reached: ' + e.message });
+      }
+    }
+    if (p === '/api/mpesa/callback' && method === 'POST') {
+      const body = await readBody(req);
+      const result = mpesa.parseCallback(body);
+      // Always acknowledge with the shape Daraja expects, even for unknown
+      // requests, so Safaricom does not keep retrying.
+      if (result) {
+        for (const bill of store.bills) {
+          const entry = Object.entries(bill.payments || {}).find(([, pay]) => pay && pay.checkoutRequestId === result.checkoutRequestId);
+          if (!entry) continue;
+          const [personId, pay] = entry;
+          pay.completedAt = new Date().toISOString();
+          pay.resultDesc = result.resultDesc || null;
+          if (result.resultCode === 0) {
+            pay.status = 'success';
+            pay.receipt = result.receipt || null;
+            if (result.amount != null) pay.amount = result.amount;
+            bill.paidBy = bill.paidBy || {};
+            bill.paidBy[personId] = true;
+          } else {
+            pay.status = result.resultCode === 1032 ? 'cancelled' : 'failed';
+          }
+          save();
+          break;
+        }
+      }
+      return send(res, 200, { ResultCode: 0, ResultDesc: 'Accepted' });
+    }
     if (p.startsWith('/api/')) return send(res, 404, { error: 'Not found' });
 
     // ----- static + page routes (/ = intro page; /app and /bill/<id> = the app) -----
@@ -222,4 +290,7 @@ const server = http.createServer(async (req, res) => {
 server.listen(PORT, () => {
   console.log(`Karak & Go Split-the-Bill running at http://localhost:${PORT}`);
   console.log(STAFF_PIN ? 'Staff PIN protection: ON' : 'Staff PIN protection: OFF (set STAFF_PIN to enable)');
+  console.log(mpesa.mpesaEnabled()
+    ? `M-Pesa: ON (${mpesa.ENV}, ${mpesa.API_BASE})`
+    : 'M-Pesa: OFF (set MPESA_* variables to enable — see .env.example)');
 });

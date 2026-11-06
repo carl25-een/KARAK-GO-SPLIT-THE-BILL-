@@ -67,7 +67,7 @@ There are deliberately only two levels (no accounts):
 
 ## 6. Roadmap / future improvements
 
-1. **M-Pesa integration** — Safaricom Daraja API: STK Push so each person can pay their exact share from their settle-up card, with payment callbacks automatically flipping their "Paid" toggle. This is the single most valuable upgrade for a Kenyan café.
+1. **M-Pesa integration** — ✅ **Built 2026-11-07** (`lib/mpesa.js`): Safaricom Daraja STK Push from each person's card for their exact share (rounded to whole KSh, as Daraja requires), with the payment callback automatically flipping their "Paid" toggle and storing the M-Pesa receipt number. Configured entirely by `MPESA_*` environment variables; the feature stays hidden until all of them are set. Verified end-to-end locally against a simulated Daraja (success, cancellation, bad-number and already-paid paths). **Still needed to run a real payment:** Daraja credentials — a free sandbox app from developer.safaricom.co.ke first, then the café's own production credentials (their business shortcode) for live money.
 2. **QR codes per table** — print a QR per table that opens/creates that table's bill, removing the link-sharing step.
 3. **Real accounts** — café owner login (and multiple staff), roles, and an audit trail of edits.
 4. **Receipts** — per-person receipt view optimised for sharing to WhatsApp, plus end-of-day sales summary for the café.

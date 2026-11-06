@@ -15,6 +15,7 @@ It is the standalone, publicly hostable version of the system: all data lives **
   - *By percentage* — custom shares per person.
 - **Tip %, tax % and discount** (percent or fixed KSh amount). Per-person totals are itemised (items / tax / tip) and rounded so they always sum **exactly** to the grand total.
 - **Mark paid** per person, plus a **Settle up** view: pick who paid the café and see who owes them (and who has settled).
+- **Pay with M-Pesa** — with Daraja credentials configured (see below), each person's card gets a **Pay with M-Pesa** button: it sends an STK Push prompt to their phone for their exact share, and when Safaricom's callback confirms, the card flips to paid automatically and shows the M-Pesa receipt number. Cancelled or failed attempts are noted on the card and can be retried. Without credentials the button simply doesn't appear and manual mark-paid works as before.
 - **Shareable bill links** — every bill has its own URL (`/bill/<id>`) the café can send to the table; customers opening it see the same live bill and their own card.
 - **Optional staff PIN** — set `STAFF_PIN` to protect menu editing and bill deletion.
 - **Mobile-friendly**, warm cream-and-caramel styling in the café's own website theme, no build step.
@@ -51,6 +52,13 @@ Try it: start a bill → add a few karaks and matcha lattes → switch the split
 | ----------- | ------- | -------------------------------------------------------------------- |
 | `PORT`      | `3000`  | Port to listen on. Hosting providers set this automatically.        |
 | `STAFF_PIN` | _(off)_ | If set, menu edits and bill deletion require this PIN in the staff view. |
+| `MPESA_CONSUMER_KEY` / `MPESA_CONSUMER_SECRET` | _(off)_ | Daraja app credentials from [developer.safaricom.co.ke](https://developer.safaricom.co.ke). |
+| `MPESA_SHORTCODE` | _(off)_ | Business shortcode that receives the money (sandbox test shortcode: `174379`). |
+| `MPESA_PASSKEY` | _(off)_ | Lipa Na M-Pesa passkey for that shortcode (shown with the Daraja test credentials for sandbox). |
+| `MPESA_CALLBACK_URL` | _(off)_ | Public URL Safaricom calls with payment results — must be `https://<your-host>/api/mpesa/callback`. |
+| `MPESA_ENV` | `sandbox` | `sandbox` for Daraja test credentials, `production` for live ones. |
+
+M-Pesa switches on only when **all** of the `MPESA_*` variables (callback included) are set. Daraja charges whole shillings, so a share with cents is rounded to the nearest KSh for the STK Push. Never commit real credentials to git — set them in the host's environment/variables panel.
 
 ## Deploy
 
@@ -88,7 +96,8 @@ matcha-cafe-split-bill/
 ├── server.js          # zero-dependency HTTP server + JSON API
 ├── lib/
 │   ├── store.js       # JSON file store + seeded café menu
-│   └── calc.js        # split maths (exact-cent rounding, settle up)
+│   ├── calc.js        # split maths (exact-cent rounding, settle up)
+│   └── mpesa.js       # Safaricom Daraja STK Push + callback parsing (env-configured)
 ├── public/
 │   ├── index.html     # app shell
 │   ├── styles.css     # Karak & Go cream-and-caramel styling
